@@ -1,1 +1,1 @@
-# Arm Manipulation Project
+# Robotic Arm Manipulation Project
