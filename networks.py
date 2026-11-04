@@ -8,7 +8,7 @@ class CriticNetwork(nn.Module):
 
     def __init__(self, input_dims, n_actions, fc1_dims=256, fc2_dims=128,
                  name='critic', checkpoint_dir='tmp/td3', 
-                 learning_rate=10e-3):
+                 learning_rate=1e-3):
         # Initialise the critic network
         super(CriticNetwork,self).__init__()
 
