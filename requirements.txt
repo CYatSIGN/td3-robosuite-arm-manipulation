@@ -1,11 +1,17 @@
+#Dependencies required
+
 gym==0.23.0
 pybullet==3.2.6
 matplotlib==3.8.2
 tensorboard==2.15.1
-robosuite==1.4.0
 termcolor==2.4.0
 h5py==3.10.0
 --extra-index-url https://download.pytorch.org/whl/cu118
 torch
 torchvision
 torchaudio
+
+# Physics simulation and compatible numerical dependencies
+mujoco==2.3.7
+numpy==1.26.4
+robosuite==1.4.0
