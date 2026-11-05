@@ -1,12 +1,13 @@
-import time
 import os
-import gym
-import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 import robosuite as suite
 from robosuite.wrappers import GymWrapper
-from networks import CritticNetwork, ActorNetwork
-from buffer import ReplayBuffer
+from td3_torch import Agent
+
+# Train a Franka Panda robot on Robosuite's Door manipulation task
+# The JOINT_VELOCITY controller accepts continuous control commands
+# Each episode has a maximum horizon of 300 environment steps
+# Reward shaping provides intermediate feedback during the task
 
 if __name__ == '__main__':
     # Important first step to prevent program from failing
@@ -40,17 +41,70 @@ if __name__ == '__main__':
     # Apply Gym wrapper
     env = GymWrapper(env)
 
-    # print("GymWrapper applied successfully!")
+    actor_learning_rate = 0.001
+    critic_learning_rate = 0.001
+    batch_size = 128
+    layer_1_size = 256
+    layer_2_size = 128
 
-    # # Reset environment
-    # obs = env.reset()
+    agent = Agent(actor_learning_rate=actor_learning_rate, critic_learning_rate=critic_learning_rate,
+                  tau=0.005, input_dims=env.observation_space.shape,
+                  env=env, n_actions=env.action_space.shape[0], layer_1_size=layer_1_size,
+                  layer_2_size=layer_2_size, batch_size=batch_size)
 
-    # print("Observation shape:", obs.shape)
-    # print("Action space:", env.action_space)
+    writer = SummaryWriter('logs')
 
-    # env.close()
-     
-    # critic_network = CritticNetwork(input_dims=[8], n_actions=8)
-    # actor_network = ActorNetwork(input_dims=[8], fc1_dims=8)
+    # Initial smoke test: verify the complete training loop
+    n_games = 5
+    #best_score = 0
+    episode_identifier = f"0 - actor_learning_rate={actor_learning_rate}\ncritic_learning_rate={critic_learning_rate}\nlayer_1_size={layer_1_size}\nlayer_2_size={layer_2_size}"
 
-    # replay_buffer = ReplayBuffer(max_size=8, input_shape=8, n_actions=8)
+    # Set True only when continuing from existing saved model weights
+    load_checkpoint = False
+    if load_checkpoint:
+        #Restore previously saved network parameters
+        agent.load_models()
+    try:
+        for i in range(n_games):
+            # Start with reset when starting with Gym environment
+            observation = env.reset()
+            done = False
+            score = 0
+
+            while not done: 
+
+                # Select a continuous action using the current observation
+                action = agent.choose_actions(observation)
+
+                # Execute the action and observe its consequences
+                next_observation, reward, done, info = env.step(action)
+
+                # Accumulate the episode's total reward
+                score += reward
+
+                # Store the transition for off-policy learning
+                agent.remember(observation, action, reward, next_observation, done)
+
+                # Update the TD3 networks when enough data is available
+                agent.learn()
+
+                # Use the latest observation for the next action
+                observation = next_observation
+
+            # Record each episode's total reward for training analysis
+            writer.add_scalar(
+                "Training/Episode_Reward",
+                score,
+                global_step=i+1
+            )
+
+        # Save network checkpoints every 10 completed episodes
+        if (i + 1) % 10 == 0:
+            agent.save_models()
+
+        print(f"Episodes: {i} score {score}")
+
+    finally:
+        # Release TensorBoard and simulation process
+        writer.close()
+        env.close()
