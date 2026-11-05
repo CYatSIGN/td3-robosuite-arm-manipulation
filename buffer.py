@@ -18,7 +18,7 @@ class ReplayBuffer():
                                      )
 
         #Store the observation received after executing each action
-        self.new_state_memory = np.zeros((self.mem_size, *input_shape),
+        self.next_state_memory = np.zeros((self.mem_size, *input_shape),
                                          dtype=np.float32
                                          )
         # PyTorch networks uses float32 by default, NumPy uses float64
