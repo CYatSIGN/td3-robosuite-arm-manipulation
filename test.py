@@ -1,16 +1,18 @@
-import time
-import os
-import gym
-import numpy as np
-from torch.utils.tensorboard import SummaryWriter
 import robosuite as suite
 from robosuite.wrappers import GymWrapper
 
+# Check that Robosuite environment works before using it for RL
+
+"""
+test.py checks:
+1. The Panda Door simulation resets successfully
+2. The action space accepts valid actions
+3. The simulation advances
+4. Robosuite returns observations and rewards
+5. The environment can be closed
+
+"""
 if __name__ == '__main__':
-    # Important first step to prevent program from failing
-    # where it tries to save files into the dir that doesn't exist
-    # Creates temporary folder to save agent's training outputs 
-    os.makedirs("tmp/td3", exist_ok=True)
 
     # Load joint velocity controller
     controller_config = suite.load_controller_config(
@@ -41,10 +43,34 @@ if __name__ == '__main__':
 
     print("GymWrapper applied successfully!")
 
-    # # Reset environment
-    # obs = env.reset()
+    try: 
+        # Reset the robot and obtain its initial observation
+        observation = env.reset()
 
-    # print("Observation shape:", obs.shape)
-    # print("Action space:", env.action_space)
+        # Check the dimensions expected by the TD3 agent
+        print("Observation shape:", observation.shape)
+        print("Action space:", env.action_space)
 
-    # env.close()
+        # Execute a few random actions to verify the simulation
+        for step in range(10):
+
+            # Sample an action within the environment's valid limits
+            action = env.action_space.sample()
+
+            # Apply the action and obtain the resulting transition
+            observation, reward, done, info = env.step(action)
+
+            print(
+                f"Step {step + 1}: "
+                f"Reward = {reward:.4f}"
+            )
+
+            # Stop if the episode has ended
+            if done:
+                 break
+
+        print("Environment test completed!")
+
+    finally:
+        # Release the simulation and rendering resources
+        env.close()
