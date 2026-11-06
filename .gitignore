@@ -10,3 +10,9 @@ __pycache__/
 
 # Temporary files
 *.log
+
+# Temporary checkpoints generated during training
+tmp/
+
+# TensorBoard Logs
+logs/
