@@ -45,8 +45,17 @@ if __name__ == "__main__":
         batch_size=128
     )
 
+    # *** IMPORTANT ***
     # Load the six network checkpoints saved during training
-    agent.load_models()
+    # use this line of code when running actual training script
+    #agent.load_models() 
+
+    # Trained weight actor has been saved to the folder "models"
+    # Use these 2 lines of code for ppl who wants to run
+    # the trained result 
+    # Load only the trained actor used to choose robot actions
+    agent.actor.checkpoint_file = "models/actor_td3"
+    agent.actor.load_checkpoint()
 
     print("Trained TD3 model loaded!")
 
