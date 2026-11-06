@@ -52,13 +52,14 @@ if __name__ == '__main__':
                   env=env, n_actions=env.action_space.shape[0], layer_1_size=layer_1_size,
                   layer_2_size=layer_2_size, batch_size=batch_size)
 
-    writer = SummaryWriter('logs')
+    writer = SummaryWriter('logs/td3_continue_200')
 
     # Initial smoke test: verify the complete training loop
-    n_games = 5
+    n_games = 10000
     #best_score = 0
     episode_identifier = f"0 - actor_learning_rate={actor_learning_rate}\ncritic_learning_rate={critic_learning_rate}\nlayer_1_size={layer_1_size}\nlayer_2_size={layer_2_size}"
 
+    # ***IMPORTANT***
     # Set True only when continuing from existing saved model weights
     load_checkpoint = False
     if load_checkpoint:
@@ -98,11 +99,16 @@ if __name__ == '__main__':
                 global_step=i+1
             )
 
-        # Save network checkpoints every 10 completed episodes
-        if (i + 1) % 10 == 0:
-            agent.save_models()
+            # Save network checkpoints every 10 completed episodes
+            if (i + 1) % 10 == 0:
+                agent.save_models()
 
-        print(f"Episodes: {i} score {score}")
+            print(
+                f"Episode {i + 1}/{n_games} | "
+                f"Reward: {score:.3f} | "
+                f"Buffer size: {min(agent.memory.mem_ctr, agent.memory.mem_size)} | "
+                f"Learning steps: {agent.learn_step_ctr}"
+            )
 
     finally:
         # Release TensorBoard and simulation process
