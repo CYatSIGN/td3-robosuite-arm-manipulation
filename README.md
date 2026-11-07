@@ -44,7 +44,7 @@ The implementation also includes an experience replay buffer that stores previou
 https://github.com/user-attachments/assets/0870b5ad-6d4b-4624-9490-30bbcc60cd9c
 
 
-![Training Chart](training_chart.png)
+![Training Chart](images/training_chart.png)
 
 
 
