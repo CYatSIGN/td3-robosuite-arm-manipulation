@@ -28,7 +28,7 @@ The objective was to train an agent using Twin Delayed Deep Deterministic Policy
 
 
 
-# Simulatinn Setup
+# Simulation Setup
 To run the trained agent model on MuJoCo to watch the Frank robot arm opening the door, follow the steps below:
 
 *git clone https://github.com/CYatSIGN/td3-robosuite-arm-manipulation.git*
