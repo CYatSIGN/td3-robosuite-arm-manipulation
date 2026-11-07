@@ -40,15 +40,16 @@ The implementation also includes an experience replay buffer that stores previou
 ## Results and Discussion
 
 
-
+Here is the video of the Franka robot arm opening the door in MuJoCo simulation.
 https://github.com/user-attachments/assets/0870b5ad-6d4b-4624-9490-30bbcc60cd9c
 
-
+A 3000++ episodes training has been conducted, where an average reward score is around 265. The total runtime was 5 hours. 
 ![Training Chart](images/training_chart.png)
 
+### Discussion
+The training results show a clear improvement in cumulative rewards as the number of training episodes increases, suggesting that the TD3 agent gradually learns a more effective control policy. However, the reward curve begins to plateau after approximately 1000 episdoes. 
 
-
-
+This suggests that the training duration could potentially be reduced to around 2-3 hours while achieving comparable reward performance. 
 
 ## Installaton and Simulation Setup
 To run the trained agent model on MuJoCo to watch the Frank robot arm opening the door, follow the steps below:
